@@ -1,14 +1,12 @@
+require('dotenv').config()
 const mongoose = require('mongoose')
 
-if (process.argv.length < 3) {
-  console.log('Please provide the password as an argument: node mongo.js <password>')
-  process.exit(1)
-}
+// always choose the test database or the production database
+// using the NODE_ENV environment variable
+// example: process.env.NODE_ENV === 'test' ? process.env.TEST_MONGODB_URI : process.env.MONGODB_URI
+const url = process.env.TEST_MONGODB_URI
 
-const password = process.argv[2]
-
-
-const url = `mongodb+srv://yereka-fullstack:${password}@cluster0.y1dth7u.mongodb.net/noteApp?retryWrites=true&w=majority`
+console.log('connecting to', url)
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
@@ -21,17 +19,17 @@ const noteSchema = new mongoose.Schema({
 
 const Note = mongoose.model('Note', noteSchema)
 
-// const note = new Note({
-//   content: 'Mongoose makes things easy',
-//   important: true,
-// })
+const note = new Note({
+  content: 'Testing makes the app less buggy',
+  important: true,
+})
 
-// note.save().then(
-//   result => {
-//     console.log('note saved!')
-//     mongoose.connection.close()
-//   }
-// )
+note.save().then(
+  () => {
+    console.log('note saved!')
+    mongoose.connection.close()
+  }
+)
 Note.find({}).then(result => {
   result.forEach(note => {
     console.log(note)
